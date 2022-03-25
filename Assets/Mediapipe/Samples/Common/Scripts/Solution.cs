@@ -27,7 +27,7 @@ namespace Mediapipe.Unity
 
       if (bootstrapObj == null)
       {
-        Logger.LogError(TAG, "Bootstrap is not found. Switching Scene");
+        Logger.LogWarning(TAG, "Bootstrap is not found. Switching Scene");
         SceneManager.LoadScene("Start Scene"); 
         yield break;
       }

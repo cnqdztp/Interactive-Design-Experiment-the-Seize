@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,41 +9,68 @@ public class Bubble : MonoBehaviour
 {
   [SerializeField] private Image ring;
   public float RingInitiateSpeed = 3f;
-  private bool isRingInitiate = false, isRingOpened = false;
-  public void InitiateRing(Vector2 position)
+  private bool isRingTrigger = false, isRingOpened = false;
+  [SerializeField] private Image cursor;
+  private BubbleChild selectedBubbleChild;
+  public void TriggerRing(Vector2 position)
   {
-    var transformSelf = transform;
+    var transformSelf = ring.transform;
     transformSelf.position = new Vector3(position.x, position.y, transformSelf.position.z);
-    isRingInitiate = true;
+    isRingTrigger = true;
   }
 
-  public void CancelInitiateRing()
+  public void UpdateRingPosition(Vector2 position)
   {
-    isRingInitiate = false;
+    var transformSelf = ring.transform;
+    transformSelf.position = new Vector3(position.x, position.y, transformSelf.position.z);
+  }
+  
+  public void CancelTriggerRing()
+  {
+    isRingTrigger = false;
   }
 
   private void Update()
   {
-    if (!isRingOpened)
+    if (isRingTrigger)
     {
-      RingSequence();
+      StartRing();
     }
+    else
+    {
+      if (selectedBubbleChild == null)
+      {
+        CloseRing();
+      }
+      else
+      {
+        
+        
+      }
+    }
+
   }
 
-  private void RingSequence()
+  private void StartRing()
   {
-    if (ring.fillAmount >= 1)
+    if (isRingTrigger&& ring.fillAmount >= 1)
     {
       isRingOpened = true;
+      cursor.DOFade(1f, 0.4f);
     }
-    else if (isRingInitiate && ring.fillAmount <1)
+    else if (isRingTrigger && ring.fillAmount <1)
     {
       ring.fillAmount += Time.deltaTime * RingInitiateSpeed;
     }
-    else if(!isRingInitiate && ring.fillAmount >=0)
+    else if(!isRingTrigger && ring.fillAmount >=0)
     {
       ring.fillAmount -= Time.deltaTime * RingInitiateSpeed;
     }
+    
+  }
+
+  private void CloseRing()
+  {
     
   }
 }

@@ -13,7 +13,6 @@ public class LandmarkGestureController : MonoBehaviour
   private GameObject landmarkSource;
   private bool readyForGestureDetection =false;
   [SerializeField] private float proximityThreshold = 1.5f;
-  [SerializeField] private Bubble BubbleUI;
   private bool currentSeize = false,lastSeize = false;
   public UnityEvent<Vector2> onSeizeStart,onSeizeHold,onSeizeEnd;
   private Vector2 leftSeizeVector2, rightSeizeVector2;
@@ -35,7 +34,12 @@ public class LandmarkGestureController : MonoBehaviour
     }
     else
     {
+      
       CancelInvoke(nameof(LookForPointListAnnotationGameObject));
+      foreach (Transform child in landmarkSource.transform)
+      {
+        child.gameObject.GetComponent<Renderer>().enabled = false;
+      }
       readyForGestureDetection = true;
       Debug.Log("Annotation Found!");
     }
