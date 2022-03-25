@@ -5,7 +5,9 @@
 // https://opensource.org/licenses/MIT.
 
 using System.Collections;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Mediapipe.Unity
 {
@@ -25,7 +27,8 @@ namespace Mediapipe.Unity
 
       if (bootstrapObj == null)
       {
-        Logger.LogError(TAG, "Bootstrap is not found. Please play 'Start Scene' first");
+        Logger.LogError(TAG, "Bootstrap is not found. Switching Scene");
+        SceneManager.LoadScene("Start Scene"); 
         yield break;
       }
 

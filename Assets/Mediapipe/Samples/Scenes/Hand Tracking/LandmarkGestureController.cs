@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mediapipe;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LandmarkGestureController : MonoBehaviour
 {
@@ -11,6 +13,10 @@ public class LandmarkGestureController : MonoBehaviour
   private GameObject landmarkSource;
   private bool readyForGestureDetection =false;
   [SerializeField] private float proximityThreshold = 1.5f;
+  [SerializeField] private Bubble BubbleUI;
+  private bool currentSeize = false,lastSeize = false;
+  public UnityEvent<Vector2> onSeizeStart,onSeizeHold,onSeizeEnd;
+  private Vector2 leftSeizeVector2, rightSeizeVector2;
   private void Awake()
   {
     instance = this;
@@ -39,20 +45,43 @@ public class LandmarkGestureController : MonoBehaviour
   {
     if (readyForGestureDetection)
     {
+      if (currentSeize && !lastSeize)
+      {
+        // Debug.Log("StartSeize at "+ GetSeizePosition());
+        onSeizeStart.Invoke(GetSeizePosition());
+      }
+      if (currentSeize && lastSeize)
+      {
+        // Debug.Log("HoldSeize at "+ GetSeizePosition());
+        onSeizeHold.Invoke(GetSeizePosition());
+      }
+      if (!currentSeize && lastSeize)
+      {
+        // Debug.Log("EndSeize at "+ GetSeizePosition());
+        onSeizeEnd.Invoke(GetSeizePosition());
+      }
+      lastSeize = currentSeize;
+      
+      
       var leftSeizeTransform = landmarkSource.transform.GetChild(leftSeizeLandmarkIndex);
       var leftSeizePosition = leftSeizeTransform.position;
-      var leftSeizeVector2 = new Vector2(leftSeizePosition.x, leftSeizePosition.y);
+      leftSeizeVector2 = new Vector2(leftSeizePosition.x, leftSeizePosition.y);
 
       var rightSeizeTransform = landmarkSource.transform.GetChild(rightSeizeLandmarkIndex);
       var rightSeizePosition = rightSeizeTransform.position;
-      var rightSeizeVector2 = new Vector2(rightSeizePosition.x, rightSeizePosition.y);
+      rightSeizeVector2 = new Vector2(rightSeizePosition.x, rightSeizePosition.y);
 
       var proximityVector = leftSeizeVector2 - rightSeizeVector2;
-      if (proximityVector.magnitude < proximityThreshold)
-      {
-        Debug.Log("Seize");
-      }
+      currentSeize = proximityVector.magnitude < proximityThreshold;
+      // Debug.Log();
     }
   }
+
+  private Vector2 GetSeizePosition()
+  {
+    return (leftSeizeVector2);
+  }
+  
+  
 
 }
